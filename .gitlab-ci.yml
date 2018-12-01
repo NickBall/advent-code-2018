@@ -1,0 +1,25 @@
+# https://leonard.io/blog/2017/05/gitlab-ci-caching-for-sbt-projects/
+# some parts originally from https://github.com/randm-ch/units-of-information/blob/master/.gitlab-ci.yml
+
+image: "hseeberger/scala-sbt:8u181_2.12.7_1.2.6"
+
+variables:
+  SBT_OPTS: "-Dsbt.global.base=sbt-cache/sbtboot -Dsbt.boot.directory=sbt-cache/boot -Dsbt.ivy.home=sbt-cache/ivy"
+
+
+cache:
+  # if you want to have a separate cache per branch, uncomment the next line
+  # key: "$CI_BUILD_REF_NAME"
+  untracked: true
+  paths:
+    - "sbt-cache/ivy/cache"
+    - "sbt-cache/boot"
+    - "sbt-cache/sbtboot"
+    - "sbt-cache/target"
+
+stages:
+  - test
+
+test:
+  script:
+    - sbt test
