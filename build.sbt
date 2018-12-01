@@ -1,4 +1,4 @@
-name := "advent-code-2015"
+name := "advent-code-2018"
 
 version := "0.1"
 
