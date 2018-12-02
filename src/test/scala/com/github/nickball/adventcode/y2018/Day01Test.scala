@@ -4,7 +4,7 @@ import com.github.nickball.adventcode.DayTest
 import org.scalatest.prop.TableFor2
 
 class Day01Test extends DayTest(Day01) {
-  override protected def TableA(): TableFor2[String, AnyVal] = Table(
+  override protected def TableA(): TableFor2[String, Any] = Table(
     ("in", "out"),
     ("+1\n-2\n+3\n+1", 3),
     ("+1\n+1\n+1", 3),
@@ -12,7 +12,7 @@ class Day01Test extends DayTest(Day01) {
     ("-1\n-2\n-3", -6)
   )
 
-  override protected def TableB(): TableFor2[String, AnyVal] = Table(
+  override protected def TableB(): TableFor2[String, Any] = Table(
     ("in", "out"),
     ("+1\n-2\n+3\n+1", 2),
     ("+1\n-1", 0),
