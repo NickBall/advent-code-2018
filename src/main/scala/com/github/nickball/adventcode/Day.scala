@@ -26,8 +26,18 @@ abstract class Day(day: Int) extends App {
 
   def PrintSolutions(): Unit = {
     val in = readInput()
-    println(s"A: ${SolutionA(in)}")
-    println(s"B: ${SolutionB(in)}")
+    println("Input loaded, running...")
+    //TODO these times are with a cold JVM, but whatever
+    println(s"A: ${time(SolutionA(in))}")
+    println(s"B: ${time(SolutionB(in))}")
+  }
+
+  protected def time[R](block: => R): R = {
+    val t0 = System.nanoTime()
+    val result = block    // call-by-name
+    val t1 = System.nanoTime()
+    println("Elapsed time: " + (t1 - t0) / 1000000 + "ms")
+    result
   }
 
   protected def readInput(): String = {
