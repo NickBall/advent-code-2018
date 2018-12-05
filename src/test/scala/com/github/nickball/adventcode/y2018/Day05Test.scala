@@ -15,5 +15,6 @@ class Day05Test extends DayTest(Day05) {
 
   override protected def TableB(): TableFor2[String, Any] = Table(
     ("in", "out"),
+    ("dabAcCaCBAcCcaDA", 4)
   )
 }

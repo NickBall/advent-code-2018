@@ -5,9 +5,6 @@ import com.github.nickball.adventcode.Day
 import scala.annotation.tailrec
 
 object Day05 extends Day(5){
-  override protected def doSolutionA(input: String) : String = {
-    polymerJoin(input, Int.MaxValue).toString
-  }
 
   @tailrec
   def polymerJoin(input: String, found: Int): Int = found match {
@@ -31,5 +28,16 @@ object Day05 extends Day(5){
       polymerJoin(sb.toString.filterNot(_.equals('0')), matches)
   }
 
-  override protected def doSolutionB(input: String) = ???
+  override protected def doSolutionA(input: String): String = {
+    polymerJoin(input).toString
+  }
+
+  def polymerJoin(input: String): Int = {
+    polymerJoin(input, Int.MaxValue)
+  }
+
+  override protected def doSolutionB(input: String): String = {
+    //for each letter, do polymer join after stripping out the given letter. find letter with smallest resulting post-reaction length
+    ('a' to 'z').map(c => c -> polymerJoin(input.filterNot(f => f.equals(c) || f.equals(c.toUpper)))).minBy(_._2)._2.toString
+  }
 }
