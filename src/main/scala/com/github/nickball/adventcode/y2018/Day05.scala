@@ -18,8 +18,7 @@ object Day05 extends Day(5){
           for (i <- 0 until input.length - 1) {
             val first = sb(i)
             val second = sb(i + 1)
-            //ugly but works! could switch with an ASCII code compare
-            if ((first.toUpper == second && first.isLower && second.isUpper) || (first.toLower == second && first.isUpper && second.isLower)) {
+            if (first != second && first.toLower == second.toLower) {
               matches += 1
               //Replace with placeholder for now to preserve iteration index
               sb.update(i, '0')
