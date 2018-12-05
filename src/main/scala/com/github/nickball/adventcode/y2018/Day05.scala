@@ -28,12 +28,12 @@ object Day05 extends Day(5){
       polymerJoin(sb.toString.filterNot(_.equals('0')), matches)
   }
 
-  override protected def doSolutionA(input: String): String = {
-    polymerJoin(input).toString
-  }
-
   def polymerJoin(input: String): Int = {
     polymerJoin(input, Int.MaxValue)
+  }
+
+  override protected def doSolutionA(input: String): String = {
+    polymerJoin(input).toString
   }
 
   override protected def doSolutionB(input: String): String = {
