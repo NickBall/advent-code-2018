@@ -16,5 +16,6 @@ class Day09Test extends DayTest(Day09) {
 
   override protected def TableB(): TableFor2[String, Any] = Table(
     ("in", "out"),
+    ("9 players; last marble is worth 25 points", 22563),
   )
 }
