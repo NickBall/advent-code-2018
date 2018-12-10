@@ -1,8 +1,8 @@
 package com.github.nickball.adventcode.common.collection
 
-import com.github.nickball.adventcode.common.collection.DoubleLinkedList.{Empty, MaybeNode, Node}
+import com.github.nickball.adventcode.common.collection.DoublyCircularLinkedList.{Empty, MaybeNode, Node}
 
-sealed class DoubleLinkedList[A] {
+sealed class DoublyCircularLinkedList[A] {
   private var current: MaybeNode[A] = Empty[A]()
   private var _size = 0
 
@@ -80,7 +80,7 @@ sealed class DoubleLinkedList[A] {
   }
 }
 
-object DoubleLinkedList {
+object DoublyCircularLinkedList {
 
   private sealed trait MaybeNode[A]
 

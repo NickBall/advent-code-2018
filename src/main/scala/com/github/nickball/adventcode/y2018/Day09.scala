@@ -1,7 +1,7 @@
 package com.github.nickball.adventcode.y2018
 
 import com.github.nickball.adventcode.Day
-import com.github.nickball.adventcode.common.collection.DoubleLinkedList
+import com.github.nickball.adventcode.common.collection.DoublyCircularLinkedList
 
 import scala.collection.immutable.Queue
 import scala.collection.mutable
@@ -23,7 +23,7 @@ object Day09 extends Day(9) {
 
   def playGame(playersCount: Int, lastMarble: Int): Long = {
     //Track marble circle
-    val marbles = new DoubleLinkedList[Int]()
+    val marbles = new DoublyCircularLinkedList[Int]()
     marbles.add(0)
 
     //Track player scores
