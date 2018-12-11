@@ -1,4 +1,4 @@
-package com.github.nickball.adventcode.y2019
+package com.github.nickball.adventcode.y2018
 
 import com.github.nickball.adventcode.Day
 
