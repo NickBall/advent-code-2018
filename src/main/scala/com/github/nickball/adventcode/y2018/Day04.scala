@@ -14,7 +14,7 @@ object Day04 extends Day(4) {
     //Find guard with most minutes
     val guard = naps.mapValues(_.size).toSeq.sortBy(_._2).reverse.head._1
     //Find guard's most frequent minute
-    val minute = naps(guard).groupBy(_.toInt).mapValues(_.size).toSeq.sortBy(_._2).reverse.head._1
+    val minute = naps(guard).groupBy(identity).mapValues(_.size).toSeq.sortBy(_._2).reverse.head._1
 
     (guard * minute).toString
   }
@@ -55,7 +55,7 @@ object Day04 extends Day(4) {
     var bestCount = -1
     //find guard with most frequent minute
     naps.foreach(i => {
-      val myMax = i._2.groupBy(_.toInt).mapValues(_.size).toSeq.sortBy(_._2).reverse.head
+      val myMax = i._2.groupBy(identity).mapValues(_.size).toSeq.sortBy(_._2).reverse.head
       if (myMax._2 > bestCount) {
         bestGuard = i._1
         bestCount = myMax._2

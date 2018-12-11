@@ -1,7 +1,6 @@
 package com.github.nickball.adventcode.y2018
 
 import com.github.nickball.adventcode.DayTest
-import com.github.nickball.adventcode.y2019.Day08
 import org.scalatest.prop.TableFor2
 
 class Day08Test extends DayTest(Day08) {
