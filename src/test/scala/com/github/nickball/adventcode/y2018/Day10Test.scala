@@ -4,6 +4,15 @@ import com.github.nickball.adventcode.DayTest
 import org.scalatest.prop.TableFor2
 
 class Day10Test extends DayTest(Day10) {
+
+  override def doSolutionA: String => String = {
+    (input) => Day10.SolutionA(input, 8)
+  }
+
+  override def doSolutionB: String => String = {
+    (input) => Day10.SolutionB(input, 8)
+  }
+
   override protected def TableA(): TableFor2[String, Any] = Table(
     ("in", "out"),
     (input,

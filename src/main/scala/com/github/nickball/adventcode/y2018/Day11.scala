@@ -38,15 +38,17 @@ object Day11 extends Day(11) {
     s"${top.x},${top.y}"
   }
 
-  override protected def doSolutionB(input: String): String = {
-    val serial = input.toInt
+  def SolutionB(input:String, maxSize: Int): String = {
+    doSolutionB(input, maxSize)
+  }
 
-    //FIXME hack for unit tests since we don't have support for test parameterization and it's bloody slow to do whole grid
-    val maxSize = serial match {
-      case 18 => 17
-      case 42 => 17
-      case _ => 300
-    }
+  override protected def doSolutionB(input: String): String = {
+    doSolutionB(input, 300)
+  }
+
+  protected def doSolutionB(input: String, maxSize: Int): String = {
+    val serial = input.toInt
+    println(s"Using maxSize: $maxSize")
 
     var largest = (Cell(-1, -1), Int.MinValue, Int.MinValue)
     (1 to maxSize).foreach(size => {

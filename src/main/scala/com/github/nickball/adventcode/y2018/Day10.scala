@@ -6,21 +6,27 @@ import scala.util.matching.Regex
 
 object Day10 extends Day(10) {
 
-  override protected def doSolutionA(input: String): String = {
-    doPoints(input)._1
+  def SolutionA(input: String, targetRangeMax: Int): String = doSolutionA(input, targetRangeMax)
+
+  def SolutionB(input: String, targetRangeMax: Int): String = doSolutionB(input, targetRangeMax)
+
+  override protected def doSolutionA(input: String): String = doSolutionA(input, 10)
+
+  protected def doSolutionA(input: String, targetRangeMax: Int): String = {
+    doPoints(input, targetRangeMax)._1
   }
 
-  def doPoints(input: String): (String, Int) = {
+  override protected def doSolutionB(input: String): String = doSolutionB(input, 10)
+
+  protected def doSolutionB(input: String, targetRangeMax: Int): String = {
+    doPoints(input, targetRangeMax)._2.toString
+  }
+
+  def doPoints(input: String, targetRangeMax: Int): (String, Int) = {
     val points = parseInput(input)
     var i = 0
     var rangeY = calcRangeYPoint(points)
     var positions: Seq[Position] = null
-
-    //FIXME different target sizes for unit tests vs production
-    val targetRangeMax = rangeY match {
-      case y if y > 100 => 10
-      case _ => 8
-    }
 
     do {
       i += 1
@@ -69,10 +75,6 @@ object Day10 extends Day(10) {
     input.split("\n").map {
       case pattern(posX, posY, velX, velY) => Point(Position(posX.toInt, posY.toInt), Velocity(velX.toInt, velY.toInt))
     }.toSeq
-  }
-
-  override protected def doSolutionB(input: String): String = {
-    doPoints(input)._2.toString
   }
 
   case class Position(x: Int, y: Int)
