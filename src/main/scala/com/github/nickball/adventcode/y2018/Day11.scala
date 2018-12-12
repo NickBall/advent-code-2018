@@ -86,10 +86,10 @@ object Day11 extends Day(11) {
     }
 
     //Add the new row+col to the previous subtotal of N-1 square
-    val newCells = (0 until squareSize).map(i => {
+    val newCells = (0 until squareSize).flatMap(i => {
       Array(Cell(cell.x + i, cell.y + squareSize - 1),
         Cell(cell.x + squareSize - 1, cell.y + i))
-    }).flatten.toSet
+    }).toSet
 
     //Get the new sum
     val newSums = newCells.toSeq.map(c => cellPowers(c))
