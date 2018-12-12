@@ -22,13 +22,15 @@ object Day11 extends Day(11) {
   lazy val allCellsPower: Int => Map[Cell, Int] = {
     val cache = mutable.Map.empty[Int, Map[Cell, Int]]
 
-    def _calculatePowers(serial: Int): Map[Cell, Int] = {
-      allCells.map(c => c -> calculatePowerLevel(c, serial)).toMap
-    }
+    def _calculatePowers(serial: Int): Map[Cell, Int] = allCells.map(c => c -> calculatePowerLevel(c, serial)).toMap
 
     serial => cache.getOrElseUpdate(serial, _calculatePowers(serial))
   }
+  lazy val squarePowers: (Int, Cell, Int) => Int = {
+    val cache = mutable.Map.empty[Int, mutable.Map[(Cell, Int), Int]]
 
+    (serial, cell, size) => cache.getOrElseUpdate(serial, mutable.Map.empty[(Cell, Int), Int]).getOrElseUpdate((cell, size), calculateSquarePower(serial, size, cell))
+  }
 
   override protected def doSolutionA(input: String): String = {
     val top = findLargestSquare(input.toInt, 3)._1
@@ -46,31 +48,54 @@ object Day11 extends Day(11) {
       case _ => 300
     }
 
-    val largest = (1 to maxSize).map(size => size -> findLargestSquare(serial, size)).sortBy(_._2._2).reverse.head
-    s"${largest._2._1.x},${largest._2._1.y},${largest._1}"
+    var largest = (Cell(-1, -1), Int.MinValue, Int.MinValue)
+    (1 to maxSize).foreach(size => {
+      val sum = findLargestSquare(serial, size)
+      if (sum._2 > largest._3) {
+        largest = (sum._1, size, sum._2)
+        println(s"FOUND new largest: ${largest._1.x},${largest._1.y},${largest._2}. Size: $sum")
+      }
+    })
+    s"${largest._1.x},${largest._1.y},${largest._2}"
   }
 
   private def findLargestSquare(serial: Int, squareSize: Int): (Cell, Int) = {
     println(s"Doing serial $serial with $squareSize size")
-    //Calculate cell values up front
-    val cells = allCellsPower(serial)
 
     //Do the squares
     var max = (Cell(-1, -1), Int.MinValue)
-    allCells.filter(c => (c.x + squareSize < 300) && (c.y + squareSize < 300)).foreach(top => {
-      var sum = 0
-      for (y <- 0 until squareSize; x <- 0 until squareSize) yield {
-        sum += cells(Cell(top.x + x, top.y + y))
-      }
-      top -> sum
-
+    val filterCells = allCells.filter(c => (c.x + squareSize - 1 <= 300) && (c.y + squareSize - 1 <= 300))
+    filterCells.foreach(top => {
+      val sum = calculateSquarePower(serial, squareSize, top)
       //Replace max if larger
-      if (max._2 < sum) {
+      if (max._2 <= sum) {
         max = (top, sum)
       }
     })
 
     max
+  }
+
+  def calculateSquarePower(serial: Int, squareSize: Int, cell: Cell): Int = {
+    val cellPowers = allCellsPower(serial)
+
+    //Load partial sum from N-1 square
+    val prevSum = squareSize match {
+      case 1 => 0
+      case _ => squarePowers(serial, cell, squareSize - 1)
+    }
+
+    //Add the new row+col to the previous subtotal of N-1 square
+    val newCells = (0 until squareSize).map(i => {
+      Array(Cell(cell.x + i, cell.y + squareSize - 1),
+        Cell(cell.x + squareSize - 1, cell.y + i))
+    }).flatten.toSet
+
+    //Get the new sum
+    val newSums = newCells.toSeq.map(c => cellPowers(c))
+    val newSum = prevSum + newSums.sum
+
+    newSum
   }
 
   case class Cell(x: Int, y: Int) {
