@@ -22,6 +22,13 @@ class Day13Test extends DayTest(Day13) {
   )
 
   override protected def TableB(): TableFor2[String, Any] = Table(
-    ("in", "out")
+    ("in", "out"),
+    ("/>-<\\  \n" +
+      "|   |  \n" +
+      "| /<+-\\\n" +
+      "| | | v\n" +
+      "\\>+</ |\n" +
+      "  |   ^\n" +
+      "  \\<->/", "6,4")
   )
 }
