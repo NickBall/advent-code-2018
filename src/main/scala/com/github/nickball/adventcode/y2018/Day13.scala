@@ -3,6 +3,24 @@ package com.github.nickball.adventcode.y2018
 import com.github.nickball.adventcode.Day
 
 object Day13 extends Day(13) {
+
+  override protected def doSolutionB(input: String) :String = {
+    var carts = locateCarts(input)
+    val emptyMap = clearMap(input)
+
+    var map = input
+    while(carts.size > 1) {
+      val resp = moveCarts(map, emptyMap, carts)
+      map = resp._1
+      carts = resp._2
+
+      println(s"Tick $i")
+      map.split("\n").foreach(l => println(l))
+      println()
+    }
+    val c = carts.head.loc
+    s"${c.x},${c.y}"
+  }
   override protected def doSolutionA(input: String): String = {
     var carts = locateCarts(input)
     val emptyMap = clearMap(input)
@@ -14,10 +32,6 @@ object Day13 extends Day(13) {
       val resp = moveCarts(map, emptyMap, carts)
       map = resp._1
       carts = resp._2
-
-      println(s"Tick $i")
-      map.split("\n").foreach(l => println(l))
-      println()
 
       collision = hasCollision(map)
       i += 1
@@ -36,7 +50,7 @@ object Day13 extends Day(13) {
     val cleanMap = empty.split("\n")
     var newCarts = Seq.empty[Cart]
     var collision = false
-    carts.iterator.takeWhile(_ => !collision).foreach(cart => {
+    carts.takeWhile(_ => !collision).foreach(cart => {
       val oldLoc = cart.loc
       //Get new location
       val newLoc = cart.direction match {
@@ -56,85 +70,48 @@ object Day13 extends Day(13) {
         case '<' => 'X'
         case '>' => 'X'
         //Just moving straight
-        case '-' => cart.direction match {
-          case Direction.Left => '<'
-          case Direction.Right => '>'
-        }
-        case '|' => cart.direction match {
-          case Direction.Down => 'v'
-          case Direction.Up => '^'
-        }
+        case '-' => cart.direction.tileVal
+        case '|' => cart.direction.tileVal
         //Turns!
         case '+' => cart.nextTurn match {
           case Direction.Left =>
             nextTurn = Direction.Straight
-            cart.direction match {
-              case Direction.Left =>
-                newDirection = Direction.Down
-                'v'
-              case Direction.Right =>
-                newDirection = Direction.Up
-                '^'
-              case Direction.Up =>
-                newDirection = Direction.Left
-                '<'
-              case Direction.Down =>
-                newDirection = Direction.Right
-                '>'
+            newDirection = cart.direction match {
+              case Direction.Left => Direction.Down
+              case Direction.Right => Direction.Up
+              case Direction.Up => Direction.Left
+              case Direction.Down => Direction.Right
             }
+            newDirection.tileVal
           case Direction.Straight =>
             nextTurn = Direction.Right
-            cart.direction match {
-              case Direction.Left => '<'
-              case Direction.Right => '>'
-              case Direction.Up => '^'
-              case Direction.Down => 'v'
-            }
+            cart.direction.tileVal
           case Direction.Right =>
             nextTurn = Direction.Left
-            cart.direction match {
-              case Direction.Left =>
-                newDirection = Direction.Up
-                '^'
-              case Direction.Right =>
-                newDirection = Direction.Down
-                'v'
-              case Direction.Up =>
-                newDirection = Direction.Right
-                '>'
-              case Direction.Down =>
-                newDirection = Direction.Left
-                '<'
+            newDirection = cart.direction match {
+              case Direction.Left => Direction.Up
+              case Direction.Right => Direction.Down
+              case Direction.Up => Direction.Right
+              case Direction.Down => Direction.Left
             }
+            newDirection.tileVal
         }
-        case '/' => cart.direction match {
-          case Direction.Left =>
-            newDirection = Direction.Down
-            'v'
-          case Direction.Right =>
-            newDirection = Direction.Up
-            '^'
-          case Direction.Up =>
-            newDirection = Direction.Right
-            '>'
-          case Direction.Down =>
-            newDirection = Direction.Left
-            '<'
-        }
-        case '\\' => cart.direction match {
-          case Direction.Left =>
-            newDirection = Direction.Up
-            '^'
-          case Direction.Right =>
-            newDirection = Direction.Down
-            'v'
-          case Direction.Up =>
-            newDirection = Direction.Left
-            '<'
-          case Direction.Down =>
-            newDirection = Direction.Right
-            '>'
-        }
+        case '/' =>
+          newDirection = cart.direction match {
+            case Direction.Left => Direction.Down
+            case Direction.Right => Direction.Up
+            case Direction.Up => Direction.Right
+            case Direction.Down => Direction.Left
+          }
+          newDirection.tileVal
+        case '\\' =>
+          newDirection = cart.direction match {
+            case Direction.Left => Direction.Up
+            case Direction.Right => Direction.Down
+            case Direction.Up => Direction.Left
+            case Direction.Down => Direction.Right
+          }
+          newDirection.tileVal
       }
 
       //Draw over old tile
@@ -185,7 +162,6 @@ object Day13 extends Day(13) {
     carts
   }
 
-  override protected def doSolutionB(input: String) = ???
 
 
   case class Cart(loc: Point, direction: Direction.EnumVal, nextTurn: Direction.EnumVal)
@@ -196,17 +172,17 @@ object Day13 extends Day(13) {
 
   object Direction {
 
-    sealed trait EnumVal
+    sealed abstract class EnumVal(val tileVal: Char)
 
-    case object Up extends EnumVal
+    case object Up extends EnumVal('^')
 
-    case object Down extends EnumVal
+    case object Down extends EnumVal('v')
 
-    case object Left extends EnumVal
+    case object Left extends EnumVal('<')
 
-    case object Right extends EnumVal
+    case object Right extends EnumVal('>')
 
-    case object Straight extends EnumVal
+    case object Straight extends EnumVal('-')
 
     val directions: Seq[Direction.EnumVal] = Seq(Up, Down, Left, Right, Straight)
   }
