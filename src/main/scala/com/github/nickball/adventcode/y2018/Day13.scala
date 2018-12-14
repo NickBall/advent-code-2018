@@ -2,42 +2,41 @@ package com.github.nickball.adventcode.y2018
 
 import com.github.nickball.adventcode.Day
 
+import scala.language.postfixOps
+
 object Day13 extends Day(13) {
 
-  override protected def doSolutionB(input: String) :String = {
+  override protected def doSolutionB(input: String): String = {
     var carts = locateCarts(input)
     val emptyMap = clearMap(input)
 
     var map = input
-    while(carts.size > 1) {
+    while (carts.size > 1) {
       val resp = moveCarts(map, emptyMap, carts)
       map = resp._1
       carts = resp._2
-
-      println(s"Tick $i")
-      map.split("\n").foreach(l => println(l))
-      println()
     }
     val c = carts.head.loc
     s"${c.x},${c.y}"
   }
+
   override protected def doSolutionA(input: String): String = {
     var carts = locateCarts(input)
     val emptyMap = clearMap(input)
 
     var map = input
-    var collision = Option.empty[Point]
+    var collisions = Seq.empty[Cart]
     var i = 0
-    while (collision.isEmpty) {
+    while (collisions.isEmpty) {
       val resp = moveCarts(map, emptyMap, carts)
       map = resp._1
       carts = resp._2
+      collisions = resp._3
 
-      collision = hasCollision(map)
       i += 1
     }
 
-    val c = collision.get
+    val c = collisions.minBy(c => c).loc
     s"${c.x},${c.y}"
   }
 
@@ -45,12 +44,12 @@ object Day13 extends Day(13) {
     input.replaceAll("[<>]", "-").replaceAll("[v^]", "|")
   }
 
-  def moveCarts(input: String, empty: String, carts: Seq[Cart]): (String, Seq[Cart]) = {
+  def moveCarts(input: String, empty: String, carts: Seq[Cart]): (String, Seq[Cart], Seq[Cart]) = {
     var newMap = input.split("\n")
     val cleanMap = empty.split("\n")
     var newCarts = Seq.empty[Cart]
-    var collision = false
-    carts.takeWhile(_ => !collision).foreach(cart => {
+    var collisions = Seq.empty[Cart]
+    carts.sortBy(c => c).iterator.filterNot(c => collisions.contains(c)).foreach(cart => {
       val oldLoc = cart.loc
       //Get new location
       val newLoc = cart.direction match {
@@ -114,20 +113,31 @@ object Day13 extends Day(13) {
           newDirection.tileVal
       }
 
+      //Add cart to collisions if needed
+      val newCart = Cart(newLoc, newDirection, nextTurn)
+      if (newVal == 'X') {
+        collisions = collisions :+ newCart
+      } else {
+        newCarts = newCarts :+ newCart
+      }
+
       //Draw over old tile
       val updatedOld = newMap(oldLoc.y).updated(oldLoc.x, cleanMap(oldLoc.y).charAt(oldLoc.x))
       newMap = newMap.updated(oldLoc.y, updatedOld)
 
-      //Replace new tile loc with new value
-      val updatedNew = newMap(newLoc.y).updated(newLoc.x, newVal)
+      //Replace new tile loc with new value or clear collision
+      var updatedNew = newMap(newLoc.y).updated(newLoc.x, newVal)
+      if (newVal == 'X') {
+        updatedNew = newMap(newLoc.y).updated(newLoc.x, cleanMap(oldLoc.y).charAt(oldLoc.x))
+        //Get other carts at location
+        collisions = collisions ++: carts.filter(c => c.loc == newLoc)
+        collisions = collisions ++: newCarts.filter(c => c.loc == newLoc)
+        newCarts = newCarts.filterNot(c => c.loc == newLoc)
+      }
       newMap = newMap.updated(newLoc.y, updatedNew)
-
-      val newCart = Cart(newLoc, newDirection, nextTurn)
-      newCarts = newCarts :+ newCart
-      collision = newVal == 'X'
     })
 
-    (newMap.mkString("\n"), newCarts)
+    (newMap.mkString("\n"), newCarts, collisions)
   }
 
   def hasCollision(input: String): Option[Point] = {
@@ -163,10 +173,16 @@ object Day13 extends Day(13) {
   }
 
 
+  case class Cart(loc: Point, direction: Direction.EnumVal, nextTurn: Direction.EnumVal) extends Ordered[Cart] {
+    override def compare(that: Cart): Int = this.loc compare that.loc
+  }
 
-  case class Cart(loc: Point, direction: Direction.EnumVal, nextTurn: Direction.EnumVal)
+  case class Point(x: Int, y: Int) extends Ordered[Point] {
 
-  case class Point(x: Int, y: Int)
+    import scala.math.Ordered.orderingToOrdered
+
+    override def compare(that: Point): Int = (this.y, this.x) compare(that.y, that.x)
+  }
 
   class Direction
 
